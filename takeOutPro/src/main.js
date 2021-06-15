@@ -3,8 +3,14 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import Vant from "vant";
-import "vant/lib/index.css";
+import Vant from 'vant';
+import 'vant/lib/index.css';
+import store from "../src/store/store"
+import requests from "./store/ajaxUrl";
+
+
+Vue.prototype.$http = requests; //将公共地址赋值给$http
+
 Vue.use(Vant);
 Vue.config.productionTip = false
 
@@ -12,6 +18,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })
