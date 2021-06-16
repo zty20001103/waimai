@@ -44,72 +44,11 @@
 <!--      商品 评论 商家 的tab切换   -->
       <van-tabs v-model="active">
         <van-tab title="点餐">
-          <div class="sidebar">
-            <div class="sidebar-left">
-              <van-sidebar v-model="activeKey" >
-                <van-sidebar-item v-for="item in sidebar" :key="item.id" :title="item.name"  @click.native="changeFood(item.id,item.name)" ></van-sidebar-item>
-              </van-sidebar>
 
-            </div>
-            <div class="sidebar-rigth" >
-              <div style="background: #FAFAFA;text-align: left;margin-bottom: 20px;padding: 10px 0"> {{foodName}}</div>
-              <div class="qqqq" v-for="(item,i) in classcomm "  :key="item.id">
-                <van-card
-                  price="9.00"
-                  :desc="item.info"
-                  :title="item.name"
-                  :thumb="'http://47.95.13.193:80/takeOutSystem-1.0-SNAPSHOT/'+item.photo"
-                >
-                  <template #tags>
-                    <p> 月销售两86分 好评率100% </p>
-                  </template>
-                  <template #num>
-                    <van-icon @click="iconAdd(item.id)" name="add" color="#51B14D" size="20px"/>
-                  </template>
-                </van-card>
-              </div>
-            </div>
-            <!--          结算的购物车-->
-            <div class="shopping">
-              <van-submit-bar  :price="gettersAmount*900" :safe-area-inset-bottom="true"  text-align="left" button-text="提交订单" style="background-color: #000000" >
-                <template #default>
-                  <van-badge is-link :content="buyfood.length" v-if="buyfood.length!==0" />
-<!--                  下方弹出框   -->
-                  <van-cell  @click="showPopup"  class="shopping-img2" style="width: 45px" >
-                      <van-icon name="cart"   size="27px" color="#fff"  />
-                  </van-cell>
-<!--                  弹出的内容-->
-                  <van-popup  v-model="show" position="bottom"   >
-                      <div>
-                        <ul class="bottom-poput">
-                          <li> <p>购物车</p>  <p>清空</p> </li>
-                          <li v-for="(item,i) in buyfood">
-                            <p>{{item.list[0].foodName}}</p>
-                            <p><van-stepper :min="0" @minus="minus(item.id,item.list[0].shopId)" @plus="plus(item.id)" v-model="item.list[0].shopId" theme="round" button-size="22" disable-input /></p>
-                            <p>￥{{item.list[0].shopId*9 }}</p>
-                          </li>
-                        </ul>
-
-                      </div>
-                  </van-popup>
-
-                </template>
-
-                <template #button >
-                  <van-button type="primary" size="large" style="border-radius:0;width: 31%">结算</van-button>
-                </template>
-
-              </van-submit-bar>
-            </div>
-
-          </div>
         </van-tab>
         <van-tab title="评价" > <Appraise :id="id"></Appraise> </van-tab>
         <van-tab title="商家" > <Merchant :merchant="id"></Merchant>  </van-tab>
       </van-tabs>
-<!--    商店里的详情商品  -->
-
-
     </div>
 </template>
 
@@ -144,82 +83,11 @@
       },
       methods:{
           ...mapMutations(['mutationsMerchant','mutationsShopping','mutationsPush','mutationsplus','mutationsMinus2','mutationsMinus']),
-        //商品减一
-        minus(id,quan){
-            var app = this
-          if (quan>1){
-            console.log("大于1")
-            this.mutationsMinus2(id)
-          }else {   //小于1则删除该订单
-              this.$http.post("/biz/deleteOrderByOid?orderId="+id).then(function (res) {
-                console.log(res.data)
-                if (res.data == 1){
-                      app.mutationsMinus(id)
-                }
-              })
-          }
-        },
-        //  购买的商品加一
-        plus(id){
-            for (var i=0;i<this.buyfood.length;i++){
-              if (id == this.buyfood[i].id){
-                this.mutationsplus(this.buyfood[i])
-              }
-            };
 
-        },
         showPopup() {   //底部弹出框是否弹出
           this.show = true;
         },
-        //  添加订单
-        iconAdd(foodId) {
-          var app = this
-          console.log(this.name);
-          console.log("name="+this.name.id);
-          this.$http.post("/biz/insertOrder",{
-            "userId":this.name.id,
-	          "shopId":this.id,
-            "list": [ { "foodId": foodId, "buyCount":1  }]
-          }).then(function (res) {
-            if( res.data==1 ){
-                console.log('成功');
-                var maxlength = parseInt(app.buyfood[app.buyfood.length-1].boughtId)  //保存订单的id
-                maxlength++
-              var maxlist = parseInt(app.buyfood[app.buyfood.length-1].list[0].id)  //保存订单里的商品的id
-              maxlist++
 
-              for (var i=0;i<app.classcomm.length;i++){   //拿到指定的商品详情
-                if (foodId == app.classcomm[i].id ){
-                  var classcomms = app.classcomm[i]
-                  console.log(classcomms)
-                }
-              };
-
-                var pushoffd= {
-                    "id": maxlength,
-                    "userId": app.name.id,
-                    "shopId": app.offd.bigcategoryId,
-                    "shopName": app.offd.name,
-                    "roderTime": "2021-06-10 19:57:55.0",
-                    "boughtId": "7328",
-                    "list": [
-                      {
-                        "id": maxlist,
-                        "foodId": foodId ,
-                        "foodName": classcomms.name,
-                        "foodPhoto": classcomms.photo,
-                        "foodInfo": classcomms.info,
-                        "buyCount": 1,
-                        "shopId": null,
-                        "shopName": null
-                      }
-                    ]
-                  }
-              app.mutationsPush(pushoffd)
-            }
-          })
-
-        },
           //切换分类后获取指定分类的商品
         changeFood(id,name){
           var app = this

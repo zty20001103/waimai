@@ -29,9 +29,9 @@
         </van-tab>
 
         <!--        待评价的内容-->
-        <van-tab title="待评价">内容 2</van-tab>
-        <van-tab title="退款">内容 3</van-tab>
-        <van-tab title="其他订单">内容 4</van-tab>
+        <van-tab title="待评价"></van-tab>
+        <van-tab title="退款"></van-tab>
+        <van-tab title="其他订单"></van-tab>
       </van-tabs>
 <!--      没有登陆给予提示-->
       <div v-else >
